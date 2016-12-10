@@ -5,17 +5,14 @@ import os.path, os
 
 
 from redis_storage import redis_data_store
-#import redis_storage
 
 class NiftyData(object):
-#	r = redis.StrictRedis(host='localhost', port=6379, db=
 
 	@cherrypy.expose
 	def index(self):
 		required_data1 = redis_data_store('https://www.nseindia.com/live_market/dynaContent/live_analysis/gainers/niftyGainers1.json')
 		required_data2 = redis_data_store('https://www.nseindia.com/live_market/dynaContent/live_analysis/losers/niftyLosers1.json')
-		#print required_data1
- 
+ 		
 
 		json_data1 = json.loads(required_data1)['data']
 		json_data2 = json.loads(required_data2)['data']
@@ -32,6 +29,27 @@ class NiftyData(object):
 			losers.append(json_data2[j]['symbol'])
 
 
+		# return """<html>
+  #         <head>
+
+  #         	<script type="text/javascript" src=" + data.js + "></script>
+  #           <script type="text/javascript" src="/static/jquery.min.js"></script>
+  #           <script type="text/javascript" src="/static/data.js"></script>
+  #           <link href="/static/style.css" rel="stylesheet">
+  #         </head>
+  #         <body>
+  #           <p>this is to test css</p>
+  #         </body>
+  #       </html>""".format(**locals())
+
+
+
+
+  # <script type="text/javascript" src="static/js/data.js"></script>
+				
+		# 	    <link href="/static/css/style.css" rel="stylesheet">
+
+
 		return """ <!DOCTYPE html>
 			<html lang="en">
 
@@ -39,12 +57,11 @@ class NiftyData(object):
 			    <title>Visualisation of NSE Data</title>
 			    <!-- Bootstrap Core CSS -->
 			    
-
+			    <link href="/static/css/style.css" rel="stylesheet">
 			    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 			    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-			    <script type="text/javascript" src="static/js/data.js"></script>
-				
-			    <link href="/static/css/style.css" rel="stylesheet">
+			    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+			    
 			</head>
 
 			<body>
@@ -54,8 +71,8 @@ class NiftyData(object):
 
 			        <!-- Page Heading -->
 			        <div class="row">
-			            <div class="col-lg-12">
-			                <h1 class="page-header">Top Gainers</h1>
+			            <div class="col-lg-10">
+			                <h1 class="page-header">TOP GAINERS</h1>
 			            </div>
 			        </div>
 			        <!-- /.row -->
@@ -64,7 +81,7 @@ class NiftyData(object):
 			        <div class="row">
 
 
-			            <div class="col-md-2 portfolio-item" onclick="alert('you clicked it');">
+			            <div class="col-md-2 portfolio-item" onclick='alert(\"HAHAHA\")'">
 			                    <div class="well">
 			                        <h4><span class="label pull-right"></span>{gainers[0]}</h4>
 			                    </div>
@@ -133,8 +150,8 @@ class NiftyData(object):
 			        <!-- /.row -->
 
 			        <div class="row">
-			            <div class="col-lg-12">
-			                <h1 class="page-header">Top Losers</h1>
+			            <div class="col-lg-10">
+			                <h1 class="page-header">TOP LOSERS</h1>
 			            </div>
 			        </div>
 
@@ -209,11 +226,7 @@ class NiftyData(object):
 			    </div>
 			    <!-- /.container -->
 
-			    <!-- jQuery -->
-			    <script src="js/jquery.js"></script>
 
-			    <!-- Bootstrap Core JavaScript -->
-			    <script src="js/bootstrap.min.js"></script>
 
 			</body>
 
@@ -222,36 +235,23 @@ class NiftyData(object):
  """.format(**locals())
 
 
+	@cherrypy.expose
+	def innerData(self):
+		return "this is the detailed data..." 
 
-# path   = os.path.abspath(os.path.dirname(__file__))
-# config = {
-#   'global' : {
-#     'server.socket_host' : '127.0.0.1',
-#     'server.socket_port' : 8080,
-#     'server.thread_pool' : 8
-#   },
-#   '/js' : {
-#     'tools.staticdir.on'  : True,
-#     'tools.staticdir.dir' : os.path.join(path, 'js')
-#   }
-# }
 
 
 if __name__ == '__main__':
-	# current_dir = os.path.dirname(os.path.abspath(__file__)) + os.path.sep
+	conf = {
+	        '/': {
+	            'tools.sessions.on': True,
+	            'tools.staticdir.root': os.path.abspath(os.getcwd())
+	        },
+	        '/static': {
+	            'tools.staticdir.on': True,
+	            'tools.staticdir.dir': './public'
+	        }
+	    }
 
-	# '/' = {
-	# 	'tools.staticdir.root': current_dir,
-	# },
-
-	config = {
-
-		'/': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-            'tools.sessions.on': True,
-            'tools.response_headers.on': True,
-            'tools.response_headers.headers': [('Content-Type', 'text/plain')],
-        }
-	}
-
-	cherrypy.quickstart(NiftyData(), '/', config)
+	cherrypy.quickstart(NiftyData(), '/', conf)
+	#cherrypy.quickstart(NiftyData())
